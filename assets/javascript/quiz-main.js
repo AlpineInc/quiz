@@ -1,193 +1,210 @@
-function Quiz(questionList) {
-    console.log(this);
-    this.self = this,
-        this.questions = questionList,
-        this.currentQuestionIndex = 0,
-        //gameStatus: ""
-        this.score = 0,
-        this.isplayTimer = null,
-        this.timer = null,
+//The game is developed as a configurable framework which gives the user/developer
+//the flexibility to pass their own set of question, time to answer each question
+//and marks per question. 
 
+//Main function for handling all logics in the game
+function Quiz(questionList, timeLimit, timeInterval) {
+	//The Quiz takes any externally defined set of questions. The questions need
+	//to be structured in a pre-defined JSON format
+    this.questions = questionList,
+    this.answerTimeLimit = timeLimit,
+    this.timeInterval = timeInterval,
+    this.currentQuestionIndex = null,
+    this.score = null,
+    this.timer = null,
 
-        this.newQuiz = function() {
-            //draw card with game instructions and button to start play
+    //Function to initialize variables for a new game
+    this.newGame = function() {
+    	//Show only the game instructions
+        $("#divcard-instruction").show();
+        //Hide the quiz question card and gameover cards
+        $("#divcard-question").hide();
+        $("#divcard-gameover").hide();
+        //Initialize variables at the begining of the game
+        this.currentQuestionIndex = 0;
+        this.drawQuestionIndex(this.currentQuestionIndex);
+        this.score = 0;
+        this.drawScore();
+        this.resetTimer();
+    },
 
-            $("#divcard-instruction").show();
+    //Function to draw the question index
+    this.drawQuestionIndex = function(index) {
+        $("#span-index").text(index + "/" + this.questions.length);
+    },
+
+    //Function to draw the score
+    this.drawScore = function() {
+        $("#span-score").text(this.score);
+    },
+
+    //Function to draw the next question. If there are no questions left,
+    //then the gameover card is displayed.
+    this.nextQuestion = function() {
+        $("#divcard-instruction").hide();
+        $("#divcard-question").show();
+        //If more questions
+        if (this.currentQuestionIndex < this.questions.length) {
+            this.drawQuestionIndex((parseInt(this.currentQuestionIndex) + 1));
+            this.drawQuestion(this.questions[this.currentQuestionIndex]);
+            this.startTimer();
+            this.currentQuestionIndex++;
+        } 
+        //Else is no more questions to draw
+        else {
+        	this.resetTimer();
             $("#divcard-question").hide();
-            $("#divcard-gameover").hide();
+            $("#divcard-gameover").show();
+        }
+    },
 
-            //initialize score to 0
-            this.score = 0;
-            //reset timer
-            this.resetTimer(this.displayTimer, "span-timer");
-            //reset currentQuestionIndex 0
-            this.currentQuestionIndex = 0;
-            //set gameStatus to "instruct"
-            //draw score
-            this.drawScore();
-            //draw questions index
-            this.drawQuestionIndex(0);
-        },
-        this.drawScore = function() {
-            $("#span-score").text(this.score);
-        },
-        this.drawQuestionIndex = function() {
-            console.log("in drawQuestionIndex");
-            console.log(this.currentQuestionIndex);
-            $("#span-index").text((parseInt(this.currentQuestionIndex) + 1) + "/" + this.questions.length);
-        },
-        this.drawQuestionIndex = function(index) {
-            $("#span-index").text(index + "/" + this.questions.length);
-        },
-        this.nextQuestion = function() {
-            $("#divcard-instruction").hide();
-            $("#divcard-question").show();
-            console.log("in next question function");
-            //if more questions
-            if (this.currentQuestionIndex < this.questions.length) {
-                console.log("inside if");
-                //draw question index
-                this.drawQuestionIndex((parseInt(this.currentQuestionIndex) + 1));
-                //draw next question
-                this.drawQuestion(this.questions[this.currentQuestionIndex]);
-                //set gameStatus to loaded
-                //start timer
-                this.startTimer();
-                //increment currentQuestionIndex
-                this.currentQuestionIndex++;
-            } else {
-                //else update card with game over and start over button
-                $("#divcard-question").hide();
-                $("#divcard-gameover").show();
-            }
-        },
-        this.drawQuestion = function(question) {
-            console.log(question.question);
-            $("#div-question").empty();
-            var pQuestion = $("<p>");
-            pQuestion.text(question.question);
-            $("#div-question").append(pQuestion);
-            var radioAnsOption = $("<form>");
-            radioAnsOption.addClass("radio");
-            var lineBreak = $("<br>");
+    //Function to draw the question on the screen
+    this.drawQuestion = function(question) {
+    	//Clear the last question
+        $("#div-questionblock").empty();
+        //Write the new question
+        var pQuestion = $("<p id='p-question'>").text(question.question);
+        $("#div-questionblock").append(pQuestion);
+        //Write the answer options for the question
+        //Radio options
+        if (question.questionType === "radio") {
+            var formRadioAnsOption = $("<form id='form-answerOptions'>").addClass("radio");
             for (i = 0; i < question.answerOptions.length; i++) {
-
-                var labelAnsOption = $("<label>");
+                var labelAnsOption = $("<label>").attr("id", "label" + i);
                 var inputAnsOption = $("<input>");
                 inputAnsOption.attr("type", "radio");
                 inputAnsOption.attr("name", "answer-option");
-                inputAnsOption.attr("value", 1);
-                labelAnsOption.attr("id", "radio" + i);
+                inputAnsOption.attr("value", i);
                 labelAnsOption.append(inputAnsOption);
-                radioAnsOption.append(labelAnsOption);
                 labelAnsOption.append(question.answerOptions[i].answer);
-                labelAnsOption.append(lineBreak);
-                $("#div-question").append(radioAnsOption);
+                formRadioAnsOption.append(labelAnsOption);
+                formRadioAnsOption.append("<br>");
             }
-            var divBtnQuestion = $("<div>");
-            var btnQuestion = $("<button>");
-            btnQuestion.attr("type", "submit");
-            btnQuestion.attr("id", "btn-submit");
-            btnQuestion.addClass("btn btn-primary");
-            btnQuestion.text("Submit");
-            divBtnQuestion.append(btnQuestion);
-            $("#div-question").append(divBtnQuestion);
-        },
-        this.startTimer = function() {
-            //set timmer to 00:00
-            //draw timer every sec
-            console.log(this);
-            var selfi = this;
-            var mins = 00;
-            var secs = 00;
-            $("#span-timermins").text("00");
-            $("#span-timersecs").text("00");
+            $("#div-questionblock").append(formRadioAnsOption);
+        } 
+        //Checkbox option - multiple answers
+        else if (question.questionType === "checkbox") {
+        	//TODO
+        }
+        //Write submit answer button
+        var btnSubmitAns = $("<button>").addClass("btn btn-primary");
+        btnSubmitAns.attr("id", "btn-submitAns");
+        btnSubmitAns.text("Submit");
+        $("#div-questionblock").append(btnSubmitAns);
+    },
 
-            this.timer = setInterval(function() {
-                console.log(this);
-                secs++;
-                if (secs <= 9) {
-                    $("#span-timersecs").text("0" + secs);
+    this.startTimer = function() {
+        var selfPointer = this;
+        var mins = 00;
+        var secs = 00;
+        var minsLimit = Math.floor(this.answerTimeLimit / 60);
+        var secsLimit = (this.answerTimeLimit % 60);
+        $("#span-timermins").text("00");
+        $("#span-timersecs").text("00");
+
+        this.timer = setInterval(function() {
+            secs++;
+            if (secs <= 9) {
+                $("#span-timersecs").text("0" + secs);
+            } else {
+                $("#span-timersecs").text(secs);
+            }
+
+            if (secs >= 60) {
+                mins++;
+                if (mins > 9) {
+                    $("#span-timermins").text(mins);
                 } else {
-                    $("#span-timersecs").text(secs);
+                    $("#span-timermins").text("0" + mins);
                 }
+                secs = 0;
+                $("#span-timersecs").text("0" + 0);
+            }
 
-                if (secs >= 60) {
-                    mins++;
-                    if (mins > 9) {
-                        $("#span-timermins").text(mins);
-                    } else {
-                        $("#span-timermins").text("0" + mins);
-                    }
-                    secs = 0;
-                    $("#span-timersecs").text("0" + 0);
+            if (mins === minsLimit && secs === secsLimit) {
+                selfPointer.stopTimer();
+                selfPointer.answerHandler("timeout");
+            }
+        }, 1000);
+    },
+
+    this.stopTimer = function() {
+        clearInterval(this.timer);
+    },
+
+    this.resetTimer = function() {
+        this.stopTimer(this.timer);
+        $("#span-timermins").text("00");
+        $("#span-timersecs").text("00");
+	},
+
+    this.answerHandler = function(eventSource) {
+        var evalAnswer = null;
+        var selfPointer = this;
+
+        //Disable the form to prevent user for chaning the answer
+        $("input").prop("disabled", true);
+        $("#btn-submitAns").prop("disabled", true);
+        
+        //When user fails to submit answer in time
+        if (eventSource === "timeout") {
+            $("#div-questionblock").append("<div id='div-questionevalresult'>Sorry. Question timeout</div>");
+            for (i = 0; i < this.questions[this.currentQuestionIndex - 1].answerOptions.length; i++) {
+                if (this.questions[this.currentQuestionIndex - 1].answerOptions[i].correct === true) {
+                    $("#label" + i).css("color", "green");
+                    $("#label" + i).css("font-weight", "bold");
                 }
+            }
+        } 
+        //When user submits an answer
+        else if (eventSource === "submit") {
+            this.stopTimer();
 
-                if (mins === 0 && secs === 15) {
-                    console.log(selfi);
-                    selfi.stopTimer();
-                    selfi.answerHandler("timeout");
-                }
-            }, 1000);
-            //when reached 30 secs, stop timer
-            //when reached 30 secs invoke answerHandler
+            //Evaluate user submitted answer
+            if (this.evalAnswer(this.questions[this.currentQuestionIndex - 1])) {
+            	$("input[type=radio]:checked").parent().css("color", "green");
+            	$("input[type=radio]:checked").parent().css("font-weight", "bold");
+                $("#div-questionblock").append("<div id='div-questionevalresult'>Congragulation! Thats the correct answer.</div>");
+                this.score = this.score + this.questions[this.currentQuestionIndex - 1].marks;
+                this.drawScore();
 
-        },
-        timerHandler = function() {
-
-
-        },
-        this.stopTimer = function() {
-            clearInterval(this.timer);
-        },
-        this.resetTimer = function(timer, location) {
-            this.stopTimer(timer);
-            $("#" + location).text("00:00");
-
-        },
-        this.answerHandler = function(eventSource) {
-            var evalAnswer = null;
-
-            //if eventSource is timer
-            if (eventSource === "timeout") {
-                //disable radio and button
-                //update card with sorry message
-                $("#div-question").append("<h3>Sorry. Question timeout</h3>");
-                //update card with correct answer
-                console.log(this.questions[this.currentQuestionIndex - 1].answerOptions);
+            } else {
+                $("#div-questionblock").append("<div id='div-questionevalresult'>Sorry. Wrong answer</div>");
                 for (i = 0; i < this.questions[this.currentQuestionIndex - 1].answerOptions.length; i++) {
                     if (this.questions[this.currentQuestionIndex - 1].answerOptions[i].correct === true) {
-                        console.log("inside if");
-                        $("#radio" + i).css("color", "green");
+                        $("#label" + i).css("color", "green");
+                                            $("#label" + i).css("font-weight", "bold");
                     }
                 }
-            } else if (eventSource === "submit") {
-                //if event source is submit button
-                //stop timer
-                this.stopTimer();
-                //evaluate answer
-            }
-
-            //if answer is correct
-            //increment score
-            //draw score
-            //update card with congrats
-            //if answer is wrong
-            //update card with sorry message.
-            //update card with correct answer
-
-            //star new timer for invoking  nextQuestion
-
-
-        },
-        this.evalAnswer = function() {
-            for (i = 0; i < document.myform.whichThing.length; i++) {
-                if (document.myform.whichThing[i].checked == true) {
-                    t = t + document.myform.whichThing[i].value;
-                }
+                $("input[type=radio]:checked").parent().css("color", "red");
+            	$("input[type=radio]:checked").parent().css("font-weight", "bold");
             }
         }
 
+        //Wait for 5 seconds before writing the next question
+        var sleepTimer = setInterval(function() {
+            selfPointer.nextQuestion();
+            clearInterval(sleepTimer);
+        }, this.timeInterval * 1000);
+    },//End of answerHandler function
 
+    this.evalAnswer = function(question) {
+        var answerEvalStatus = false;
 
-}
+        question.answerOptions.forEach(function(element, index) {
+            if (element.correct) {
+                if ($("input[type=radio]")[index].checked) {
+
+                    answerEvalStatus = true;
+                }
+            }
+        });
+
+        if (answerEvalStatus) {
+            return true;
+        } else {
+            return false;
+        }
+    }//End of evalAnswer function
+
+}//End of Quiz function

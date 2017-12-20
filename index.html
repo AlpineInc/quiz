@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Javascript Quiz</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="assets/css/index.css">
@@ -15,70 +16,57 @@
 
 <body>
     <nav class="navbar navbar-light bg-dark">
-        <div class="col-md-6 col-lg-6">
-            <span class="h2" class="navbar-brand mb-0 float-left">Test your Javascript skills</span>
-        </div>
-        <div class="col-lg-2">
-            <div class="row m-auto">
-                <span class="h6 m-0">Questions</span>
+        <div class="h2 col-xs-12 col-sm-12 col-md-12 col-lg-6 m-auto" id="div-banner">Javascript skills</div>
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-2 div-dashboard">
+            <div class="row">
+                <span class="h6 m-auto">Questions</span>
             </div>
-            <div class="row m-auto">
-                <span class="h4 m-0" id="span-index">2/30</span>
+            <div class="row">
+                <span class="h4 m-auto" id="span-index">2/30</span>
             </div>
         </div>
-        <div class="col-lg-2">
-            <div class="row m-auto">
-                <span class="h6 m-0">Score</span>
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-2 div-dashboard">
+            <div class="row">
+                <span class="h6 m-auto">Score</span>
             </div>
-            <div class="row m-auto">
-                <span class="h4 m-0" id="span-score">2</span>
+            <div class="row">
+                <span class="h4 m-auto" id="span-score">2</span>
             </div>
         </div>
-        <div class="col-lg-2">
-            <div class="row m-auto">
-                <span class="h6 m-0">Timer</span>
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-2 div-dashboard">
+            <div class="row">
+                <span class="h6 m-auto">Timer</span>
             </div>
-            <div class="row m-auto">
-                <span class="h4 m-0" id="span-timermins">00</span>
+            <div class="row">
+                <span class="h4 m-0 ml-auto" id="span-timermins">00</span>
                 <span class="h4 m-0" id="span-timerdelimiter">:</span>
-                <span class="h4 m-0" id="span-timersecs">00</span>
+                <span class="h4 m-0 mr-auto" id="span-timersecs">00</span>
             </div>
         </div>
     </nav>
     <div class="container">
-        <div class="row mt-5">
+        <div class="row mt-5 mb-5">
             <div class="col-12">
                 <div class="card">
-
                     <div class="card-block p-3" id="divcard-instruction">
                         <p id="p-instruction">Welcome to the Javascript quiz. You will be given 30 secs to answer each question. Click on the Start button when ready. Good luck!</p>
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-primary btn-start">Start</button>
-                        </div>
-                        </form>
+                        <button class="btn btn-primary" id="btn-start">Start</button>
                     </div>
-
-
                     <div class="card-block p-3" id="divcard-question">
-                        <div id="div-question">
+                        <div id="div-questionblock">
                             <p id="p-question">This is my first question</p>
-                            <div class="radio">
-                                <label><input type="radio" id="option1" value="option1"> Option one is this and that&mdash;be sure to include why it's great</label>
-                            </div>
-                            <div class="col-sm-10">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
+                            <form class="" id="form-answerOptions">
+                                <label>
+                                    <input type="radio" id="option1" value="option1"> Option one is this and that&mdash;be sure to include why it's great</label>
+                                <br>
+                            </form>
+                            <button class="btn btn-primary" id="btn-submitAns">Submit</button>
                         </div>
                     </div>
-
                     <div class="card-block p-3" id="divcard-gameover">
                         <p id="p-instruction">Well done. Do you want to try again?</p>
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-primary btn-restart">Restart</button>
-                        </div>
-                        </form>
+                        <button class="btn btn-primary" id="btn-restart">Restart</button>
                     </div>
-
                 </div>
             </div>
         </div>

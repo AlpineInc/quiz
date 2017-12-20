@@ -1,18 +1,19 @@
+//Initialize the questions for the quiz game
 var questions = [{
     questionType: "radio",
     marks: 1,
     question: "Where is the correct place to insert a JavaScript?",
     answerOptions: [{
         id: 1,
-        answer: "The <head> section",
+        answer: "The &lt;head&gt; section",
         correct: false
     }, {
         id: 2,
-        answer: "The <body> section",
+        answer: "The &lt;body&gt; section",
         correct: false
     }, {
         id: 3,
-        answer: "Both the <head> section and the <body> section are correct",
+        answer: "Both the &lt;head&gt; section and the &lt;body&gt; section are correct",
         correct: true
     }]
 }, {
@@ -41,31 +42,47 @@ var questions = [{
         answer: "False",
         correct: true
     }]
+},{
+    questionType: "radio",
+    marks: 1,
+    question: "What is the correct syntax for referring to an external script called xxx.js?",
+    answerOptions: [{
+        id: 1,
+        answer: "&lt;script href=&quot;xxx.js&quot;&gt;",
+        correct: false
+    }, {
+        id: 2,
+        answer: "&lt;script src=&quot;xxx.js&quot;&gt;",
+        correct: true
+    }, {
+        id: 3,
+        answer: "&lt;script name=&quot;xxx.js&quot;&gt;",
+        correct: false
+    }]
 }];
 
+
+//Initialize the game
 $(document).ready(function() {
-	    console.log(this);
-    var quizGame = new Quiz(questions);
-    quizGame.score = 10;
-    var quizGame2 = new Quiz(questions);
-    quizGame2.score = 20;
-    quizGame.newQuiz();
-    console.log(this);
-    $(document).on("click", ".btn-start", function() {
-        console.log(this);
+	//Create new instance of the Quiz function. Passing the list of questions, timelimit (seconds)
+	//and time interval (seconds) between question as input to initialize the game.
+    var quiz = new Quiz(/*list of questions*/ questions, /*timelimit per question*/ 10, /*time interval between questions*/ 5);
+    quiz.newGame();
 
-        quizGame.nextQuestion();
+    //Event handler for Start game button click
+    $(document).on("click", "#btn-start", function() {
+        quiz.nextQuestion();
     });
 
-
-    $(document).on("click", "#btn-submit", function(event) {
-        console.log(event);
+    //Event handler for submit answer button click
+    $(document).on("click", "#btn-submitAns", function(event) {
+        //Prevent the form action from being submitted. This helps prevent page reload.
         event.preventDefault();
-        quizGame.answerHandler("submit");
+        quiz.answerHandler("submit");
     });
 
-    $(document).on("click", ".btn-restart", function() {
-    	quizGame.newQuiz();
+    //Event handler for restart game button click
+    $(document).on("click", "#btn-restart", function() {
+        quiz.newGame();
     });
-
 });

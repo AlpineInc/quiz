@@ -1,9 +1,8 @@
-body{
+body {
     font-family: 'Roboto', sans-serif;
-
 }
 
-.navbar{
+.navbar {
     color: white;
 }
 
@@ -22,9 +21,32 @@ body{
 }
 
 .card {
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
-.card-block{
+.card-block {
     display: none;
+}
+
+#div-questionevalresult {
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+#div-banner{
+    font-family: 'Pacifico', cursive;
+    padding-bottom: 10px;
+}
+
+@media screen and (max-width: 980px) {
+    #div-banner {
+        text-align: center;
+        padding-bottom: 20px;
+    }
+    .div-dashboard{
+        background-color: grey;
+        padding-top: 10px;
+        padding-bottom: 10px;
+
+    }
 }
